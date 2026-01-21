@@ -5,6 +5,7 @@ import address from "../assets/icons/address.png";
 import timer from "../assets/icons/timer.png";
 import { InfoRow } from "./ui/InfoRow.jsx";
 import { SuccessPopup } from "./ui/SuccessPopup.jsx";
+import { api } from "../lib/api.js";
 
 const Label = ({ text }) => (
   <label className="mb-1 block font-poppins text-[14px] font-medium leading-[20px] text-gray-900">
