@@ -1,0 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[1402px] px-4 sm:px-6 lg:px-10;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-forest text-white hover:bg-forest2;
+  }
+
+  .btn-outline {
+    @apply btn border border-stroke bg-white text-ink hover:bg-canvas;
+  }
+
+  .input {
+    @apply h-10 w-full rounded-md border border-stroke bg-white px-3 text-sm outline-none transition focus:border-forest;
+  }
+
+  .label {
+    @apply text-xs font-medium text-ink;
+  }
+}
