@@ -59,48 +59,35 @@ export function ContactSection({ openEnquiry }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/enquiries`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          source: 'contact-form'
-        }),
-      });
+  e.preventDefault();
 
-      if (response.ok) {
-        setShowSuccess(true);
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          preferredDate: "",
-          guests: "",
-          message: "",
-        });
-        setErrors({});
-      } else {
-        const errorData = await response.json();
-        console.error('Submission failed:', errorData);
-        // You could show an error popup here
-      }
-    } catch (error) {
-      console.error('Network error:', error);
-      // You could show an error popup here
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  if (!validateForm()) return;
+  setIsSubmitting(true);
+
+  try {
+    await api.post("/api/enquiries", {
+      ...formData,
+      source: "contact-form",
+    });
+
+    setShowSuccess(true);
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      preferredDate: "",
+      guests: "",
+      message: "",
+    });
+    setErrors({});
+  } catch (error) {
+    console.error("Network error:", error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
   return (
     <section className="bg-white py-14">
       <div className="container-page">
