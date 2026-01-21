@@ -12,19 +12,25 @@ dotenv.config();
 
 const app = express();
 
+// Security & trust
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
+// CORS
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN?.split(",").map((s) => s.trim()) || ["http://localhost:5173"],
-    credentials: false,
+    origin: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(",").map((s) => s.trim())
+      : ["http://localhost:5173"],
   })
 );
+
+// Middlewares
 app.use(helmet());
 app.use(express.json({ limit: "100kb" }));
 app.use(morgan("dev"));
 
+// Rate limiting
 app.use(
   "/api",
   rateLimit({
@@ -35,24 +41,33 @@ app.use(
   })
 );
 
-app.get("/health", (_req, res) => res.json({ ok: true }));
-app.use("/api/enquiries", enquiriesRouter);
+// ------------------- ROUTES -------------------
 
-// error handler
-// eslint-disable-next-line no-unused-vars
+// Health check
+app.get("/api/health", async (_req, res) => {
+  try {
+    await connectDb(process.env.MONGODB_URI);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false });
+  }
+});
+
+// Enquiries API
+app.use("/api/enquiries", async (req, res, next) => {
+  try {
+    await connectDb(process.env.MONGODB_URI);
+    return enquiriesRouter(req, res, next);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ---------------- ERROR HANDLER ----------------
 app.use((err, _req, res, _next) => {
-  // Avoid leaking details
   console.error(err);
   res.status(500).json({ error: "INTERNAL_SERVER_ERROR" });
 });
 
-const PORT = Number(process.env.PORT || 8080);
-connectDb(process.env.MONGODB_URI)
-  .then(() => {
-    app.listen(PORT, () => console.log(`API listening on http://localhost:${PORT}`));
-  })
-  .catch((e) => {
-    console.error("Failed to start server:", e);
-    process.exit(1);
-  });
-
+module.exports = app;
